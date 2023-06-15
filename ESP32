@@ -1,0 +1,50 @@
+Como trabalho final da disciplina, o professor sugeriu que fizessemos um projeto utilizando um controlador ESP32 e sensores e estratégia de comunicação. Segue abaixo o código desse trabalho.
+
+import time
+import network
+import machine 
+
+print("Conectando-se ao Wi-Fi", end="")
+sta_if = network.WLAN(network.STA_IF)
+sta_if.active(True)
+sta_if.connect('Wokwi-GUEST', '')
+while not sta_if.isconnected():
+  print(".", end="")
+  time.sleep(0.1)
+print(" Conectado!")
+
+servo_pin = 4
+
+sensor_pin = machine.Pin(14, machine.Pin.IN)
+
+# Configure PWM on servo pin
+pin_4 = machine.Pin(servo_pin)
+pwm_4 = machine.PWM(pin_4, freq=50)
+
+def open_feeder():
+    print("Dispensando comida!")
+    # set_servo_position(26)
+    set_servo_position(500_000)
+
+def close_feeder():
+    print("Parando de dispensar...")
+    set_servo_position(1_475_000)
+
+def set_servo_position(pulse_width):
+    pwm_4.duty_ns(pulse_width)
+
+def dispense_food(duration):
+    open_feeder()
+    time.sleep(duration)
+    close_feeder()
+
+while True:
+    if sensor_pin.value() == 1:
+        dispense_food(5) # dispensar comida por 5 segundos
+    else:
+        print("Nenhum movimento detectado")
+    time.sleep(10)  # esperar antes de dispensar comida novamente
+    
+
+
+Link para ver o microcontrolador funcionando: https://wokwi.com/projects/367424036365093889
